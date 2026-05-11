@@ -8,23 +8,33 @@ IF OBJECT_ID('Kullanici', 'U') IS NOT NULL DROP TABLE Kullanici
 IF OBJECT_ID('Adresler', 'U') IS NOT NULL DROP TABLE Adresler
 IF OBJECT_ID('Siparisler', 'U') IS NOT NULL DROP TABLE Siparisler
 
+CREATE TABLE Rol(
+	RolId TINYINT IDENTITY(1,1) PRIMARY KEY,
+	RolAdi NVARCHAR(50) NOT NULL UNIQUE,
+
+)
 
 CREATE TABLE Restaurant(
 	RestaurantId INT IDENTITY(1,1) PRIMARY KEY,
+	RestaurantRol TINYINT NOT NULL,
 	RestaurantAdi NVARCHAR(50) NOT NULL,
-	RestaurantMail NVARCHAR(100) NOT NULL,
-	RestaurantParola NVARCHAR(256) NOT NULL,
+	RestaurantMail NVARCHAR(100) NOT NULL UNIQUE,
+	RestaurantParola NVARCHAR(256) NOT NULL UNIQUE,
 	RestaurantSehir NVARCHAR(20) NOT NULL,
 	RestaurantAdres NVARCHAR(200) NOT NULL,
-	RestaurantVergiNo NVARCHAR(11) NOT NULL,
+	RestaurantVergiNo NVARCHAR(11) NOT NULL UNIQUE,
 	RestaurantTelNo NVARCHAR(11) NOT NULL,
 	RestaurantLogoUrl NVARCHAR(500),
 	RestaurantMinTutar DECIMAL(10,2),
+	CHECK(RestaurantMinTutar>0),
 	RestaurantTeslimSuresi NVARCHAR(2),
+	CHECK(RestaurantTeslimSuresi>0),
 	RestaurantAcilisSaati TIME,
 	RestaurantKapanisSaati TIME,
 	RestaurantAcikMi BIT NOT NULL,
 	RestaurantAktifMi BIT DEFAULT 1,
+	--RestaurantToplamCiro INT NULL,
+	FOREIGN KEY (RestaurantRol) REFERENCES Rol(RolId)
 )
 
 CREATE TABLE Kategoriler(
@@ -40,6 +50,7 @@ CREATE TABLE Menu(
 	KategoriId INT NOT NULL,
 	MenuAdi NVARCHAR(50) NOT NULL,
 	MenuFiyat DECIMAL(10,2) NOT NULL,
+	CHECK(MenuFiyat>0),
 	MenuAciklama NVARCHAR(300) NOT NULL,
 	MenuVarMi BIT NOT NULL,
 	MenuAktifMi BIT DEFAULT 1,
@@ -47,10 +58,12 @@ CREATE TABLE Menu(
 )
 CREATE TABLE Kullanici(
 	KullaniciId INT IDENTITY(1,1) PRIMARY KEY,
+	KullaniciRol TINYINT NOT NULL,
 	KullaniciAdi NVARCHAR(50) NOT NULL,
 	KullaniciSoyadi NVARCHAR(50) NOT NULL,
-	KullaniciMail NVARCHAR(100) NOT NULL,
-	KullaniciParola NVARCHAR(256) NOT NULL,
+	KullaniciMail NVARCHAR(100) NOT NULL UNIQUE,
+	KullaniciParola NVARCHAR(256) NOT NULL UNIQUE,
+	FOREIGN KEY (KullaniciRol) REFERENCES Rol(RolId)
 )
 
 CREATE TABLE Adresler(
@@ -70,7 +83,25 @@ CREATE TABLE Siparisler(
 	MenuId INT NOT NULL,
 	AdresId INT NOT NULL,
 	SiparisAdet TINYINT NOT NULL,
+	SiparisTarihi AS GETDATE(),
 	FOREIGN KEY (KullaniciId) REFERENCES Kullanici(KullaniciId),
 	FOREIGN KEY (MenuId) REFERENCES Menu(MenuId),
 	FOREIGN KEY (AdresId) REFERENCES Adresler(AdresId),
 )
+
+
+CREATE TABLE Kurye(
+	KuryeId INT IDENTITY(1,1) PRIMARY KEY,
+	KuryeRol TINYINT NOT NULL,
+	KuryeAdi NVARCHAR(50) NOT NULL,
+	KuryeSoyadi NVARCHAR(50) NOT NULL,
+	KuryeTCNO NVARCHAR(11) NOT NULL UNIQUE,
+	KuryeMail NVARCHAR(256) NOT NULL UNIQUE,
+	KuryeParola NVARCHAR(256) NOT NULL UNIQUE,
+	FOREIGN KEY (KuryeRol) REFERENCES Rol(RolId)
+)
+
+
+
+
+
