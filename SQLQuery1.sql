@@ -29,13 +29,14 @@ CREATE TABLE Restaurant(
 	CHECK(RestaurantMinTutar>0),
 	RestaurantTeslimSuresi NVARCHAR(2),
 	CHECK(RestaurantTeslimSuresi>0),
-	RestaurantAcilisSaati TIME,
-	RestaurantKapanisSaati TIME,
+	RestaurantAcilisSaati NVARCHAR(5),
+	RestaurantKapanisSaati NVARCHAR(5),
 	RestaurantAcikMi BIT NOT NULL,
 	RestaurantAktifMi BIT DEFAULT 1,
-	--RestaurantToplamCiro INT NULL,
+	RestaurantToplamCiro INT NULL,
 	FOREIGN KEY (RestaurantRol) REFERENCES Rol(RolId)
 )
+--RESTAURANT CÝRO ÝÇÝN TRÝGGER GEREKLÝ
 
 CREATE TABLE Kategoriler(
 	KategoriId INT IDENTITY(1,1) PRIMARY KEY,
@@ -56,6 +57,7 @@ CREATE TABLE Menu(
 	MenuAktifMi BIT DEFAULT 1,
 	FOREIGN KEY (KategoriId) REFERENCES Kategoriler(KategoriId)
 )
+
 CREATE TABLE Kullanici(
 	KullaniciId INT IDENTITY(1,1) PRIMARY KEY,
 	KullaniciRol TINYINT NOT NULL,
@@ -63,8 +65,20 @@ CREATE TABLE Kullanici(
 	KullaniciSoyadi NVARCHAR(50) NOT NULL,
 	KullaniciMail NVARCHAR(100) NOT NULL UNIQUE,
 	KullaniciParola NVARCHAR(256) NOT NULL UNIQUE,
+	KullaniciCuzdan INT DEFAULT 0,
 	FOREIGN KEY (KullaniciRol) REFERENCES Rol(RolId)
 )
+CREATE TABLE Kartlar(
+	KartId INT IDENTITY(1,1) PRIMARY KEY,
+	KullaniciId INT NOT NULL,
+	Isim NVARCHAR(50) NOT NULL,
+	SoyIsim NVARCHAR (50) NOT NULL,
+	KartNumarasi NVARCHAR(16) NOT NULL UNIQUE,
+	Tarih NVARCHAR(5) NOT NULL,
+	CVC2No NVARCHAR(3) NOT NULL,
+	FOREIGN KEY (KullaniciId) REFERENCES Kullanici(KullaniciId)
+)
+
 
 CREATE TABLE Adresler(
 	AdresId INT IDENTITY(1,1) PRIMARY KEY,
@@ -101,7 +115,13 @@ CREATE TABLE Kurye(
 	FOREIGN KEY (KuryeRol) REFERENCES Rol(RolId)
 )
 
-
+CREATE TABLE KuryeSiparis(
+	Id INT IDENTITY(1,1) PRIMARY KEY,
+	KuryeId INT,
+	SiparisId INT,
+	FOREIGN KEY (KuryeId) REFERENCES Kurye(KuryeId),
+	FOREIGN KEY(SiparisId) REFERENCES Siparisler(SiparisId)
+)
 
 
 
